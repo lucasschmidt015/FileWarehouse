@@ -3,3 +3,5 @@ class Backblaze {
     console.log("amogus");
   }
 }
+
+export default Backblaze;

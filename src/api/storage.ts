@@ -6,13 +6,21 @@ class Storage {
   constructor() {
     this.b2 = new BackBlazeB2({
       applicationKey: process.env.B2_KEY_ID as string,
-      applicationKeyId: process.env.B2_APPLICATION_KEY as string,
+      applicationKeyId: process.env.B2_APP_KEY as string,
     });
   }
 
-  do_stuff() {
-    console.log("asdasdd");
+  async uploadFile(filePath: string) {
+    this.b2.uploadFile({
+    });
+  }
+
+  async getFile(id: string) {
+  }
+
+  async removeFile(id: string) {
   }
 }
 
-export default Storage;
+const storage = new Storage();
+export default storage;

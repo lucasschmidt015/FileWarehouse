@@ -1,0 +1,60 @@
+.container-login{
+    height: 100%;
+    width: 100%;
+
+    padding: 0;
+    margin: 0;
+
+    background-color: #101010;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-area{
+    background-color: #EAEAEC;
+    width: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+form{
+    margin-top: 1.5em;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+}
+form h1 {
+    text-align: center;
+    margin-bottom: 0.5em;
+    color: #181c2e;
+}
+
+.input-area input{
+    margin-bottom: 15px;
+    height: 35px;
+    border: 0;
+    border-radius: 7px;
+    padding: 10px;
+    font-size: 15px;
+    background-color: #fff;
+}
+
+form button {
+    height: 35px;
+    border: 0;
+    border-radius: 7px;
+    background-color: #181c2e;
+    color: #fff;
+    font-size: 1.3em;
+}
+
+.input-area a {
+    margin: 1.5em 0;
+    color: #000;
+    cursor: pointer;
+}

@@ -1,14 +1,13 @@
-import { useEffect } from 'react';
+import AllRoutes from "./Routes";
+import { BrowserRouter } from "react-router-dom"; 
+
 
 function App() {
 
-  useEffect(() => {
-
-  }, [])
-
   return (
-    <div>
-    </div>
+    <BrowserRouter>
+      <AllRoutes/>
+    </BrowserRouter>
   );
 }
 

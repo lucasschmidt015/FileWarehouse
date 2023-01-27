@@ -1,0 +1,12 @@
+.background-screen{
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.background-screen button{
+    width: 400px;
+    height: 400px;
+}

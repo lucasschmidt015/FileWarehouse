@@ -1,16 +1,20 @@
 import './SignIn.css'
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useContext } from 'react';
+import { AuthContext } from '../../Context/auth';
+
 
 export default function SignIn(){
 
     const [email, setEmail ] = useState('');
     const [senha, setSenha] = useState('');
 
+    const { SignIn } = useContext(AuthContext);
 
     function handleSubmit(e){
         e.preventDefault();
-        alert("Is working");
+        SignIn(email, senha);
     }
 
     return(

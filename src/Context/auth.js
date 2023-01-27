@@ -1,30 +1,71 @@
 import { createContext, useState, useEffect } from "react";
+import firebase from "../services/FirebaseConnection";
 import { toast } from "react-toastify";
-import { db, authenticate } from '../services/FirebaseConnection'
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, addDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
 
+ 
 export const AuthContext = createContext();
-
 
 function AuthProvider({children}){
 
-    const Navegar = useNavigate();
+    //const Navegar = useNavigate();
 
     const [user, setUser] = useState(null);
     const [loadingAuth, setLoadingAuth] = useState(false);
     const [loading, setLoading] = useState(true);
 
+
+    function loadStorage(){
+        const storageUser = localStorage.getItem("SystemUser");
+
+        if (storageUser){
+            setUser(JSON.parse(storageUser))
+            setLoading(false);
+        }
+        
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        loadStorage();
+    }, [])
+
+
+    async function SignIn(email, password){
+        setLoadingAuth(true);
+        await firebase.auth().signInWithEmailAndPassword(email, password)
+        .then( async (value) => {
+            let uid = value.user.uid;
+            const userProfile = await firebase.firestore().collection('users').doc(uid).get();
+            
+            let data = {
+                uid: uid,
+                name: userProfile.data().name,
+                email: value.user.email,
+            }
+
+            setUser(data);
+            storageUser(data);
+            setLoadingAuth(false);
+            toast.success("Bem vindo de volta!");
+
+        })
+        .catch((error) => {
+            console.log("Erro:" + error)
+            toast.error("Ops, algo deu errado!");
+            setLoadingAuth(false);
+        })
+    }
+
+
     async function SignUp(email, password, name) {
 
         if (email !== '' && password !== '' && name !== ''){
-            setLoading(true);
-            await createUserWithEmailAndPassword(authenticate, email, password)
+            setLoadingAuth(true);
+            await firebase.auth().createUserWithEmailAndPassword(email, password)
             .then( async (value) => {
                 let uid = value.user.uid;
                 
-                await addDoc(collection(db, "users"), {
+                await firebase.firestore().collection("users").doc(uid).set({
                     name: name,
                 })
                 .then(() => {
@@ -53,6 +94,14 @@ function AuthProvider({children}){
         
     }
 
+
+    async function SignOut(){
+        
+        await firebase.auth().signOut();
+        localStorage.removeItem('SystemUser')
+        setUser(null);
+    }
+
     function storageUser(data){
         localStorage.setItem('SystemUser', JSON.stringify(data));
     }
@@ -63,8 +112,10 @@ function AuthProvider({children}){
             signed: !!user,
             user,
             loading,
+            SignIn,
             SignUp,
             setUser,
+            SignOut,
             loadingAuth,
             storageUser
             }}>

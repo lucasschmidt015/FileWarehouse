@@ -2,25 +2,14 @@ import axios from 'axios';
 
 const APIEXT: string = 'b2api/v2';
 
-type AuthData = {
-  accountId: string | undefined,
-  apiUrl: string | undefined,
-  token: string | undefined,
-};
-
-type URLs = {
-  downloadUrl: string | undefined,
-  uploadUrl: string | undefined,
-};
-
-class BackblazeLifecycle {
+class StorageLifecycle {
   appKeyId: string;
   appKey: string;
-  authData: AuthData;
-  urls: URLs = {
-    downloadUrl: undefined,
-    uploadUrl: undefined,
-  };
+  accountId: string | undefined;
+  apiUrl: string | undefined;
+  token: string | undefined;
+  downloadUrl: string | undefined;
+  uploadUrl: string | undefined;
 
   constructor(appKeyId: string, appKey: string) {
     this.appKeyId = appKeyId;
@@ -44,20 +33,18 @@ class BackblazeLifecycle {
     if (response.status !== 200)
       return false;
     const data = JSON.parse(response.data);
-    this.authData = {
-      accountId: data.accountId,
-      token: data.authorizationToken,
-      apiUrl: data.apiUrl,
-    }
-    this.urls.downloadUrl = data.downloadUrl;
+    this.accountId = data.accountId,
+    this.token = data.authorizationToken,
+    this.apiUrl = data.apiUrl,
+    this.downloadUrl = data.downloadUrl;
     return true;
   }
 
   async getNewUploadUrl(tries: number = 0): Promise<boolean> {
     if (tries > 2) return false;
-    const response = await axios.get(`${this.authData.apiUrl}/${APIEXT}/b2_get_upload_url`, {
+    const response = await axios.get(`${this.apiUrl}/${APIEXT}/b2_get_upload_url`, {
       headers: {
-        'Authorization': this.authData.token,
+        'Authorization': this.token,
       },
     });
     if (response.status === 401) {
@@ -67,33 +54,40 @@ class BackblazeLifecycle {
     } else if (response.status !== 200)
       return false;
     const data = JSON.parse(response.data);
-    this.urls.uploadUrl = data.uploadUrl;
+    this.uploadUrl = data.uploadUrl;
     return true;
   }
 }
 
-class Backblaze {
-  lifecycleData: BackblazeLifecycle;
+export type BackblazeFile = {
+  id: string,
+  name: string,
+  uploadedOn: number,
+  size: number, // bytes
+};
 
-  private constructor(lifecycleData: BackblazeLifecycle) {
-    this.lifecycleData = lifecycleData;
+export default class Storage {
+  private lifecycle: StorageLifecycle;
+
+  private constructor(lifecycleData: StorageLifecycle) {
+    this.lifecycle = lifecycleData;
   };
 
-  async init(): Promise<Backblaze | undefined> {
-    const lifecycleData = new BackblazeLifecycle(process.env.B2_KEY_ID as string, process.env.B2_APP_KEY as string);
+  static async init(): Promise<Storage | undefined> {
+    const lifecycleData = new StorageLifecycle(process.env.B2_KEY_ID as string, process.env.B2_APP_KEY as string);
     const success = await lifecycleData.refresh();
     if (!success) return undefined;
-    return new Backblaze(lifecycleData);
+    return new Storage(lifecycleData);
   }
 
   // Upload file
   async uploadFile(file: File, tries: number = 0): Promise<boolean> {
-    if (!this.lifecycleData.urls.uploadUrl)
-      await this.lifecycleData.getNewUploadUrl();
+    if (!this.lifecycle.uploadUrl)
+      await this.lifecycle.getNewUploadUrl();
     if (tries > 2) return false;
-    const response = await axios.post(`${this.lifecycleData.authData.apiUrl}/${APIEXT}/b2_upload_file`, await file.arrayBuffer(), {
+    const response = await axios.post(`${this.lifecycle.apiUrl}/${APIEXT}/b2_upload_file`, await file.arrayBuffer(), {
       headers: {
-        'Authorization': this.lifecycleData.authData.token,
+        'Authorization': this.lifecycle.token,
         'X-Bz-File-Name': file.name,
         'Content-Type': file.type,
         'Content-Length': file.size,
@@ -101,7 +95,7 @@ class Backblaze {
       }
     });
     if (response.status === 401) {
-      const success = await this.lifecycleData.getNewUploadUrl();
+      const success = await this.lifecycle.getNewUploadUrl();
       if (!success) return false;
       return await this.uploadFile(file, tries+1);
     }
@@ -109,21 +103,37 @@ class Backblaze {
   }
 
   // Download file
-  // Get files and pages
+  async downloadFile(url: string): Promise<File | undefined> {
+    return undefined;
+  }
+  
+  // Get files
+  async getFiles() : Promise<BackblazeFile[]> {
+    return [
+      {
+        id: '1',
+        name: 'Example file 1',
+        size: 1000,
+        uploadedOn: 1,
+      },
+      {
+        id: '2',
+        name: 'Example file 2',
+        size: 2000,
+        uploadedOn: 2,
+      },
+      {
+        id: '3',
+        name: 'Example file 3',
+        size: 3000,
+        uploadedOn: 3,
+      },
+      {
+        id: '4',
+        name: 'Example file 4',
+        size: 4000,
+        uploadedOn: 4,
+      },
+    ];
+  }
 }
-
-class Storage {
-
-  async uploadFile(file: File) {
-    const buf = file.arrayBuffer();
-  }
-
-  async getFile(id: string) {
-  }
-
-  async removeFile(id: string) {
-  }
-}
-
-const storage = new Storage();
-export default storage;

@@ -1,0 +1,55 @@
+.header-container{
+    
+    background-color: #181c2e;
+    color: #fff;
+
+    width: 100%;
+    height: auto;
+    position: relative;
+    display: flex;
+    justify-content: end;
+}
+
+.header-container button{
+    font-size: 25px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #0b1333;
+    border: none;
+    border-radius: 7px;
+    
+    width: 130px;
+    height: 40px;
+
+    margin: 7px 20px;
+    transition: ease 0.5s;
+}
+
+
+.header-container button:hover{
+    background-color: #00104e;
+    font-size: 28px;
+}
+
+@media screen and (max-width: 600px) {
+    .header-container button{
+        font-size: 20px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #0b1333;
+        border: none;
+        border-radius: 7px;
+        
+        width: 100px;
+        height: 35px;
+    
+        margin: 7px 20px;
+        transition: ease 0.5s;
+    }
+    
+    
+    .header-container button:hover{
+        background-color: #00104e;
+        font-size: 28px;
+    }
+}

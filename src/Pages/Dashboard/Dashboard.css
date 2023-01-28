@@ -1,12 +1,48 @@
-.background-screen{
-    height: 100%;
 
+.body-dashboard{
+    width: 100%;    
+    height: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
 }
 
-.background-screen button{
-    width: 400px;
-    height: 400px;
+.container-dashboard{
+    display: flex;
+    background-color: #CACACA;
+    width: 100%;
+    height: 100%;
+}
+
+.container-dashboard button{
+    width: 170px;
+    height: 50px;
+    border: none;
+    background-color: #181c2e;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 22px;
+    margin-top: 20px;
+    margin-left: 30px;
+}
+
+.container-dashboard button svg{
+    margin-right: 20px;
+}
+
+@media screen and (max-width: 600px){
+    .container-dashboard button{
+        width: 120px;
+        height: 40px;
+        border: none;
+        background-color: #181c2e;
+        color: #fff;
+        border-radius: 8px;
+        font-size: 18px;
+        margin-top: 18px;
+        margin-left: 15px;       
+    }   
+
+    .container-dashboard button svg{
+        margin-right: 12px;
+    }
 }

@@ -1,7 +1,11 @@
 import axios from 'axios';
+import fs from 'fs';
 
 const APIEXT: string = 'b2api/v2';
 
+/**
+ * Stores persistent data relating to the Backblaze B2 API 
+ */
 class StorageLifecycle {
   appKeyId: string;
   appKey: string;
@@ -20,6 +24,9 @@ class StorageLifecycle {
     return 'Basic ' + Buffer.from(`${appKeyId}:${appKey}`);
   }
 
+  /**
+   * Refreshes account ID, authorization token, API URL and download URL
+   */
   async refresh(): Promise<boolean> {
     const appKeyId = process.env.B2_KEY_ID;
     const appKey = process.env.B2_APP_KEY;
@@ -40,8 +47,11 @@ class StorageLifecycle {
     return true;
   }
 
-  async getNewUploadUrl(tries: number = 0): Promise<boolean> {
-    if (tries > 2) return false;
+  /**
+   * Refreshes the upload URL
+   */
+  async getNewUploadUrl(__tries: number = 0): Promise<boolean> {
+    if (__tries > 2) return false;
     const response = await axios.get(`${this.apiUrl}/${APIEXT}/b2_get_upload_url`, {
       headers: {
         'Authorization': this.token,
@@ -50,7 +60,7 @@ class StorageLifecycle {
     if (response.status === 401) {
       const success = await this.refresh();
       if (!success) return false;
-      return await this.getNewUploadUrl(tries+1);
+      return await this.getNewUploadUrl(__tries+1);
     } else if (response.status !== 200)
       return false;
     const data = JSON.parse(response.data);
@@ -59,6 +69,9 @@ class StorageLifecycle {
   }
 }
 
+/**
+ * Represents a file stored in Backblaze B2.
+ */
 export type BackblazeFile = {
   id: string,
   name: string,
@@ -66,6 +79,9 @@ export type BackblazeFile = {
   size: number, // bytes
 };
 
+/**
+ * Storage API with a Backblaze B2 backend
+ */
 export default class Storage {
   private lifecycle: StorageLifecycle;
 
@@ -73,18 +89,24 @@ export default class Storage {
     this.lifecycle = lifecycleData;
   };
 
+  /**
+   * Asynchronously initializes the class with lifecycle data, returning `undefined` in case of failure.
+   */
   static async init(): Promise<Storage | undefined> {
     const lifecycleData = new StorageLifecycle(process.env.B2_KEY_ID as string, process.env.B2_APP_KEY as string);
-    const success = await lifecycleData.refresh();
+    let success = await lifecycleData.refresh();
     if (!success) return undefined;
     return new Storage(lifecycleData);
   }
 
-  // Upload file
-  async uploadFile(file: File, tries: number = 0): Promise<boolean> {
+  /**
+   * Uploads a file, returning its `id` as a string in case of success and `undefiend` in case of failure.
+   * The second argument, `__tries`, should not be used by the end user.
+   */
+  async uploadFile(file: File, __tries: number = 0): Promise<string | undefined> {
     if (!this.lifecycle.uploadUrl)
       await this.lifecycle.getNewUploadUrl();
-    if (tries > 2) return false;
+    if (__tries > 2) return undefined;
     const response = await axios.post(`${this.lifecycle.apiUrl}/${APIEXT}/b2_upload_file`, await file.arrayBuffer(), {
       headers: {
         'Authorization': this.lifecycle.token,
@@ -96,18 +118,39 @@ export default class Storage {
     });
     if (response.status === 401) {
       const success = await this.lifecycle.getNewUploadUrl();
-      if (!success) return false;
-      return await this.uploadFile(file, tries+1);
+      if (!success) return undefined;
+      return await this.uploadFile(file, __tries+1);
+    } else if (response.status !== 200) {
+      return undefined;
     }
-    return true;
+    return response.data.fileId;
   }
 
-  // Download file
-  async downloadFile(url: string): Promise<File | undefined> {
-    return undefined;
+  /**
+   * Downloads a file, returning a request string to be sent to the user
+   */
+  downloadFile(id: string, __tries: number = 0): string {
+    return `${this.lifecycle.downloadUrl}/${APIEXT}/b2_download_file_by_id?fileId=${id}`;
+  }
+
+  private validateId(id: string): boolean {
+    return id.length === 99 && id.startsWith("4_");
+  }
+
+  async getIdsStartCount(start: number, count: number): Promise<string[]> {
+    const filelistId = '4_z2392d43688d5e56e87570c18_f1151e06ec7bd13b2_d20230128_m154939_c004_v0402011_t0041_u01674920979037';
+    const response = await axios.get(this.downloadFile(filelistId), {
+      headers: {
+        'Range': `bytes=${start*99}-${(start*99)+((count-1)*99)}`,
+      }
+    });
+    if (response.status !== 200) return [];
+    return response.data;
   }
   
-  // Get files
+  /**
+   * Returns an array of `BackblazeFile`s
+   */
   async getFiles() : Promise<BackblazeFile[]> {
     return [
       {

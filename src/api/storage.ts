@@ -40,9 +40,9 @@ class StorageLifecycle {
     if (response.status !== 200)
       return false;
     const data = JSON.parse(response.data);
-    this.accountId = data.accountId,
-    this.token = data.authorizationToken,
-    this.apiUrl = data.apiUrl,
+    this.accountId = data.accountId;
+    this.token = data.authorizationToken;
+    this.apiUrl = data.apiUrl;
     this.downloadUrl = data.downloadUrl;
     return true;
   }
@@ -132,47 +132,28 @@ export default class Storage {
   downloadFile(id: string, __tries: number = 0): string {
     return `${this.lifecycle.downloadUrl}/${APIEXT}/b2_download_file_by_id?fileId=${id}`;
   }
-
-  private validateId(id: string): boolean {
-    return id.length === 99 && id.startsWith("4_");
-  }
-
-  async getIdsStartCount(start: number, count: number): Promise<string[]> {
-    const filelistId = '4_z2392d43688d5e56e87570c18_f1151e06ec7bd13b2_d20230128_m154939_c004_v0402011_t0041_u01674920979037';
-    const response = await axios.get(this.downloadFile(filelistId), {
-      headers: {
-        'Range': `bytes=${start*99}-${(start*99)+((count-1)*99)}`,
-      }
-    });
-    if (response.status !== 200) return [];
-    return response.data;
-  }
   
   /**
    * Returns an array of `BackblazeFile`s
    */
-  async getFiles() : Promise<BackblazeFile[]> {
+  async getFiles(ids: string[]) : Promise<BackblazeFile[]> {
     return [
       {
-        id: '1',
         name: 'Example file 1',
         size: 1000,
         uploadedOn: 1,
       },
       {
-        id: '2',
         name: 'Example file 2',
         size: 2000,
         uploadedOn: 2,
       },
       {
-        id: '3',
         name: 'Example file 3',
         size: 3000,
         uploadedOn: 3,
       },
       {
-        id: '4',
         name: 'Example file 4',
         size: 4000,
         uploadedOn: 4,

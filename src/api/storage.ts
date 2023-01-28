@@ -1,7 +1,7 @@
 import axios from 'axios';
 import fs from 'fs';
 
-const APIEXT: string = 'b2api/v2';
+const APIEXT: string = 'b2api/v1';
 
 /**
  * Stores persistent data relating to the Backblaze B2 API 
@@ -73,7 +73,6 @@ class StorageLifecycle {
  * Represents a file stored in Backblaze B2.
  */
 export type BackblazeFile = {
-  id: string,
   name: string,
   uploadedOn: number,
   size: number, // bytes
@@ -129,35 +128,16 @@ export default class Storage {
   /**
    * Downloads a file, returning a request string to be sent to the user
    */
-  downloadFile(id: string, __tries: number = 0): string {
+  getDownloadLink(id: string, __tries: number = 0): string {
     return `${this.lifecycle.downloadUrl}/${APIEXT}/b2_download_file_by_id?fileId=${id}`;
   }
   
   /**
    * Returns an array of `BackblazeFile`s
    */
-  async getFiles(ids: string[]) : Promise<BackblazeFile[]> {
-    return [
-      {
-        name: 'Example file 1',
-        size: 1000,
-        uploadedOn: 1,
-      },
-      {
-        name: 'Example file 2',
-        size: 2000,
-        uploadedOn: 2,
-      },
-      {
-        name: 'Example file 3',
-        size: 3000,
-        uploadedOn: 3,
-      },
-      {
-        name: 'Example file 4',
-        size: 4000,
-        uploadedOn: 4,
-      },
-    ];
+  async getManyDownloadLinks(ids: string[]) : Promise<string[]> {
+    return ids.map(id => {
+      return this.getDownloadLink(id);
+    });
   }
 }

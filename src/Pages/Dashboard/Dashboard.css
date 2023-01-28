@@ -23,6 +23,12 @@
     font-size: 22px;
     margin-top: 20px;
     margin-left: 30px;
+    transition: ease 0.5s;
+}
+
+.container-dashboard button:hover{
+    background-color: #0b1541;;
+    font-size: 25px;
 }
 
 .container-dashboard button svg{
@@ -41,6 +47,11 @@
         margin-top: 18px;
         margin-left: 15px;       
     }   
+
+    .container-dashboard button:hover{
+        font-size: 18px;
+        background-color: #0b1541;;
+    }
 
     .container-dashboard button svg{
         margin-right: 12px;

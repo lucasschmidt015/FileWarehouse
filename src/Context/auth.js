@@ -3,16 +3,20 @@ import firebase from "../services/FirebaseConnection";
 import { toast } from "react-toastify";
 import Storage from "../api/storage.ts";
 
+
 export const AuthContext = createContext();
 
 function AuthProvider({children}){
-
-    //const Navegar = useNavigate();
 
     const [user, setUser] = useState(null);
     const [loadingAuth, setLoadingAuth] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    const _storage = Storage.init(); // Passar as credenciais que o jaqi mandar aqui
+
+    function getStorage(){
+        return _storage;
+    }
 
     function loadStorage(){
         const storageUser = localStorage.getItem("SystemUser");
@@ -117,6 +121,7 @@ function AuthProvider({children}){
             setUser,
             SignOut,
             loadingAuth,
+            getStorage,
             storageUser
             }}>
             {children}

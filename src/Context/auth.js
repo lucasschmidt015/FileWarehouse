@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import firebase from "../services/FirebaseConnection";
 import { toast } from "react-toastify";
+import storage from "../api/storage.ts";
 
  
 export const AuthContext = createContext();

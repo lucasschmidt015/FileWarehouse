@@ -37,7 +37,6 @@ class StorageLifecycle {
     const response = await axios.get(`https://api.backblazeb2.com/${APIEXT}/b2_authorize_account`, {
       headers: {
         'Authorization': this.buildAuth(),
-        'Access-Control-Allow-Origin': '*',
       }
     });
     console.log(`RESPONSE: ${response}`);
@@ -60,7 +59,6 @@ class StorageLifecycle {
     const response = await axios.get(`${this.apiUrl}/${APIEXT}/b2_get_upload_url`, {
       headers: {
         'Authorization': this.token,
-        'Access-Control-Allow-Origin': '*',
       },
     });
     if (response.status === 401) {
@@ -119,7 +117,6 @@ export default class Storage {
         'Content-Type': file.type,
         'Content-Length': file.size,
         'X-Bz-Content-Sha1': 'do_not_verify',
-        'Access-Control-Allow-Origin': '*',
       }
     });
     if (response.status === 401) {

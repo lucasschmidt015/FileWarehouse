@@ -1,13 +1,10 @@
 import './Dashboard.css';
 
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../../Context/auth';
 import Header from '../../Components/Header';
 import { FaFileUpload } from 'react-icons/fa'
-
 import firebase from "../../services/FirebaseConnection"
-
-import Storage from "../../api/storage.ts";
 import { toast } from 'react-toastify';
 
 export default function Dashboard(){
@@ -15,6 +12,7 @@ export default function Dashboard(){
     const { user, getStorage } = useContext(AuthContext);
     
     const [loadingFile, setLoadingFile] = useState(false);
+    const [files, setFiles] = useState([]);
 
     // Call input from file
     function callLoadingFile(){
@@ -22,7 +20,7 @@ export default function Dashboard(){
         fileInput.click();
     }
 
-    //Upload the file to the server and store the metadata in firebase
+    // Upload the file to the server and store the metadata in firebase
     async function uploadFile(event){
         setLoadingFile(true);
         const file = event.target.files[0];
@@ -61,10 +59,11 @@ export default function Dashboard(){
         setLoadingFile(false);
     }
 
-    //Calls the API to send the file to the server
+    // Calls the API to send the file to the server
     async function sendFile(file) {        
-
         const storage = await getStorage();
+        
+        console.log(storage);
         
         return await storage.uploadFile(file);    
     }
@@ -78,6 +77,13 @@ export default function Dashboard(){
                     {loadingFile ? "loading..." : "Upload"}
                 </button> 
                 <input type="file" style={{display: "none"}} id="fileInput" onChange={(e) => uploadFile(e)} />
+                <div className='table-area'>
+                    {files.length === 0 ?(
+                        <span>No files found...</span>
+                    ):(
+                        <span>Encontrouuuu</span>
+                    )}
+                </div>
             </div>   
         </div>
     );

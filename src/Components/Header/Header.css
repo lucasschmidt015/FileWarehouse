@@ -11,45 +11,53 @@
 }
 
 .header-container button{
-    font-size: 25px;
-    font-weight: bold;
+    font-size: 30px;
+    
     color: #fff;
     background-color: #0b1333;
     border: none;
-    border-radius: 7px;
+    border-radius: 5px;
     
-    width: 130px;
+    width: 70px;
     height: 40px;
 
-    margin: 7px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin: 7px 30px;
     transition: ease 0.5s;
 }
 
 
 .header-container button:hover{
     background-color: #00104e;
-    font-size: 28px;
+    font-size: 35px;
 }
 
 @media screen and (max-width: 600px) {
     .header-container button{
-        font-size: 20px;
-        font-weight: bold;
+        font-size: 30px;
+    
         color: #fff;
         background-color: #0b1333;
         border: none;
-        border-radius: 7px;
+        border-radius: 5px;
         
-        width: 100px;
-        height: 35px;
+        width: 60px;
+        height: 42px;
     
-        margin: 7px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    
+        margin: 7px 15px;
         transition: ease 0.5s;
     }
     
     
     .header-container button:hover{
         background-color: #00104e;
-        font-size: 28px;
+        font-size: 30px;
     }
 }

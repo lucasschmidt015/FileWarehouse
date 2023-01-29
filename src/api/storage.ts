@@ -1,7 +1,8 @@
 import axios from 'axios';
-import fs from 'fs';
+import env from 'react-dotenv';
+import { Buffer } from 'buffer';
 
-const APIEXT: string = 'b2api/v1';
+const APIEXT: string = 'b2api/v2';
 
 /**
  * Stores persistent data relating to the Backblaze B2 API 
@@ -15,28 +16,32 @@ class StorageLifecycle {
   downloadUrl: string | undefined;
   uploadUrl: string | undefined;
 
-  constructor(appKeyId: string, appKey: string) {
-    this.appKeyId = appKeyId;
-    this.appKey = appKey;
+  constructor(appKeyId: string | undefined, appKey: string | undefined) {
+    if (typeof appKeyId !== 'string' || typeof appKey !== 'string') {
+      console.log(`Erro na .env: B2_APP_KEY ou B2_KEY_ID`);
+    }
+    this.appKeyId = appKeyId!;
+    this.appKey = appKey!;
   }
 
-  private buildAuth(appKeyId: string, appKey: string): string {
-    return 'Basic ' + Buffer.from(`${appKeyId}:${appKey}`);
+  private buildAuth(): string {
+    return 'Basic ' + Buffer.from(`${this.appKeyId}:${this.appKey}`).toString('base64');
   }
 
   /**
    * Refreshes account ID, authorization token, API URL and download URL
    */
   async refresh(): Promise<boolean> {
-    const appKeyId = process.env.B2_KEY_ID;
-    const appKey = process.env.B2_APP_KEY;
-    if (typeof appKeyId !== 'string' || typeof appKey !== 'string')
+    if (typeof this.appKeyId !== 'string' || typeof this.appKey !== 'string')
       return false;
     const response = await axios.get(`https://api.backblazeb2.com/${APIEXT}/b2_authorize_account`, {
       headers: {
-        'Authorization': this.buildAuth(appKeyId, appKey),
+        'Authorization': this.buildAuth(),
+        'Access-Control-Allow-Origin': '*',
       }
     });
+    console.log(`RESPONSE: ${response}`);
+    console.log(`${response.status} ${response.statusText}`);
     if (response.status !== 200)
       return false;
     const data = JSON.parse(response.data);
@@ -55,6 +60,7 @@ class StorageLifecycle {
     const response = await axios.get(`${this.apiUrl}/${APIEXT}/b2_get_upload_url`, {
       headers: {
         'Authorization': this.token,
+        'Access-Control-Allow-Origin': '*',
       },
     });
     if (response.status === 401) {
@@ -92,7 +98,7 @@ export default class Storage {
    * Asynchronously initializes the class with lifecycle data, returning `undefined` in case of failure.
    */
   static async init(): Promise<Storage | undefined> {
-    const lifecycleData = new StorageLifecycle(process.env.B2_KEY_ID as string, process.env.B2_APP_KEY as string);
+    const lifecycleData = new StorageLifecycle(env.B2_KEY_ID as string, env.B2_APP_KEY as string);
     let success = await lifecycleData.refresh();
     if (!success) return undefined;
     return new Storage(lifecycleData);
@@ -113,6 +119,7 @@ export default class Storage {
         'Content-Type': file.type,
         'Content-Length': file.size,
         'X-Bz-Content-Sha1': 'do_not_verify',
+        'Access-Control-Allow-Origin': '*',
       }
     });
     if (response.status === 401) {

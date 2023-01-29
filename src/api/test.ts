@@ -1,6 +1,5 @@
-import dotenv from 'dotenv';
 import Storage from './storage';
-
+import dotenv from 'dotenv';
 
 async function test(): Promise<boolean> {
   const storage = await Storage.init();

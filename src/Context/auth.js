@@ -5,14 +5,12 @@ import Storage from "../api/storage.ts";
 
 
 export const AuthContext = createContext();
+const _storage = Storage.init(); // Passar as credenciais que o jaqi mandar aqui
 
 function AuthProvider({children}){
-
     const [user, setUser] = useState(null);
     const [loadingAuth, setLoadingAuth] = useState(false);
     const [loading, setLoading] = useState(true);
-
-    const _storage = Storage.init(); // Passar as credenciais que o jaqi mandar aqui
 
     function getStorage(){
         return _storage;

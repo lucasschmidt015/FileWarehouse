@@ -1,14 +1,16 @@
 import './Dashboard.css';
 
-import { useContext, useState, useEffect } from 'react';
-import { AuthContext } from '../../Context/auth';
 import Header from '../../Components/Header';
-import { FaFileUpload, FaTrash } from 'react-icons/fa'
+import { AuthContext } from '../../Context/auth';
+
+import { useContext, useState, useEffect } from 'react';
 import firebase from "../../services/FirebaseConnection"
 import { toast } from 'react-toastify';
+import { format } from 'date-fns';
+
+import { FaFileUpload, FaTrash } from 'react-icons/fa'
 import { AiOutlineDownload } from 'react-icons/ai'
 
-import { format } from 'date-fns';
 
 export default function Dashboard(){
 

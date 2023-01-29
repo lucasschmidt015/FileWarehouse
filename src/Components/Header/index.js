@@ -10,6 +10,7 @@ export default function Header(){
 
     return(
         <div className='header-container'>
+            <h1>File Warehouse</h1>
             <button onClick={SignOut}><AiOutlinePoweroff/></button>
         </div>
     );

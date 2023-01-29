@@ -3,16 +3,19 @@ import './Dashboard.css';
 import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../../Context/auth';
 import Header from '../../Components/Header';
-import { FaFileUpload } from 'react-icons/fa'
+import { FaFileUpload, FaTrash } from 'react-icons/fa'
 import firebase from "../../services/FirebaseConnection"
 import { toast } from 'react-toastify';
+import { AiOutlineDownload } from 'react-icons/ai'
+
+import { format } from 'date-fns';
 
 export default function Dashboard(){
 
     const { user, getStorage } = useContext(AuthContext);
     
     const [loadingFile, setLoadingFile] = useState(false);
-    const [files, setFiles] = useState([]);
+    const [files, setFiles] = useState([{userId: "GASFA-FASDW", serverId: "sfsdf", fileName: "photoExample", uploadDate: new Date()}, {userId: "GASFA-FASDW", serverId: "fasfafs", fileName: "FileExample2", uploadDate: new Date()}]);
 
     // Call input from file
     function callLoadingFile(){
@@ -68,6 +71,14 @@ export default function Dashboard(){
         return await storage.uploadFile(file);    
     }
 
+    function deleteFile(idServer){
+        alert(idServer)
+    }
+
+    function downloadFile(idServer){
+        alert(idServer);
+    }
+
     return(
         <div className='body-dashboard'>
             <Header/>        
@@ -81,7 +92,31 @@ export default function Dashboard(){
                     {files.length === 0 ?(
                         <span>No files found...</span>
                     ):(
-                        <span>Encontrouuuu</span>
+                        <>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope='Col'>Name</th>
+                                        <th scope='Col'>Updated</th>
+                                        <th scope='Col'>#</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {files.map((item, index) => {
+                                        return(
+                                            <tr key={index}>
+                                                <td data-Label="Name">{item.fileName}</td>
+                                                <td data-Label="Date">{format(item.uploadDate, 'dd/MM/yyyy')}</td>
+                                                <td>
+                                                    <span id="trash" onClick={() => deleteFile(item.serverId)} className='action'><FaTrash/></span>
+                                                    <span id='download' onClick={() => downloadFile(item.serverId)} className='action'><AiOutlineDownload/></span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </>
                     )}
                 </div>
             </div>   

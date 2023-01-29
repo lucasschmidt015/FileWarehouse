@@ -1,16 +1,9 @@
 .container-login{
     height: 100%;
-    width: 100%;
-
-    padding: 0;
-    margin: 0;
-
-    background-color: #101010;
-
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-color: #101010;
 }
 
 .input-area{

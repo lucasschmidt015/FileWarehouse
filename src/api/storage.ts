@@ -1,4 +1,3 @@
-import axios from 'axios';
 import env from 'react-dotenv';
 import { Buffer } from 'buffer';
 
@@ -34,16 +33,19 @@ class StorageLifecycle {
   async refresh(): Promise<boolean> {
     if (typeof this.appKeyId !== 'string' || typeof this.appKey !== 'string')
       return false;
-    const response = await axios.get(`https://api.backblazeb2.com/${APIEXT}/b2_authorize_account`, {
-      headers: {
+    console.log(`AUTH: ${this.buildAuth()}`);
+    const response = await fetch(`https://api.backblazeb2.com/${APIEXT}/b2_authorize_account`, {
+      mode: 'no-cors',
+      method: 'GET',
+      headers: new Headers({
         'Authorization': this.buildAuth(),
-      }
+      }),
     });
     console.log(`RESPONSE: ${response}`);
     console.log(`${response.status} ${response.statusText}`);
     if (response.status !== 200)
       return false;
-    const data = JSON.parse(response.data);
+    const data: any = await response.json();
     this.accountId = data.accountId;
     this.token = data.authorizationToken;
     this.apiUrl = data.apiUrl;
@@ -56,9 +58,10 @@ class StorageLifecycle {
    */
   async getNewUploadUrl(__tries: number = 0): Promise<boolean> {
     if (__tries > 2) return false;
-    const response = await axios.get(`${this.apiUrl}/${APIEXT}/b2_get_upload_url`, {
+    const response = await fetch(`${this.apiUrl}/${APIEXT}/b2_get_upload_url`, {
+      mode: 'no-cors',
       headers: {
-        'Authorization': this.token,
+        'Authorization': this.token as string,
       },
     });
     if (response.status === 401) {
@@ -67,7 +70,7 @@ class StorageLifecycle {
       return await this.getNewUploadUrl(__tries+1);
     } else if (response.status !== 200)
       return false;
-    const data = JSON.parse(response.data);
+    const data: any = await response.json();
     this.uploadUrl = data.uploadUrl;
     return true;
   }
@@ -107,26 +110,29 @@ export default class Storage {
    * The second argument, `__tries`, should not be used by the end user.
    */
   async uploadFile(file: File, __tries: number = 0): Promise<string | undefined> {
-    if (!this.lifecycle.uploadUrl)
-      await this.lifecycle.getNewUploadUrl();
-    if (__tries > 2) return undefined;
-    const response = await axios.post(`${this.lifecycle.apiUrl}/${APIEXT}/b2_upload_file`, await file.arrayBuffer(), {
-      headers: {
-        'Authorization': this.lifecycle.token,
-        'X-Bz-File-Name': file.name,
-        'Content-Type': file.type,
-        'Content-Length': file.size,
-        'X-Bz-Content-Sha1': 'do_not_verify',
-      }
-    });
-    if (response.status === 401) {
-      const success = await this.lifecycle.getNewUploadUrl();
-      if (!success) return undefined;
-      return await this.uploadFile(file, __tries+1);
-    } else if (response.status !== 200) {
-      return undefined;
-    }
-    return response.data.fileId;
+    //if (!this.lifecycle.uploadUrl)
+      //await this.lifecycle.getNewUploadUrl();
+    //if (__tries > 2) return undefined;
+    //const response = await fetch(`${this.lifecycle.apiUrl}/${APIEXT}/b2_upload_file`, {
+      //method: 'POST',
+      //headers: {
+        //'Authorization': this.lifecycle.token as string,
+        //'X-Bz-File-Name': file.name,
+        //'Content-Type': file.type,
+        //'Content-Length': file.size.toString(),
+        //'X-Bz-Content-Sha1': 'do_not_verify',
+      //},
+      //body: Buffer.from(await file.arrayBuffer()),
+    //});
+    //if (response.status === 401) {
+      //const success = await this.lifecycle.getNewUploadUrl();
+      //if (!success) return undefined;
+      //return await this.uploadFile(file, __tries+1);
+    //} else if (response.status !== 200) {
+      //return undefined;
+    //}
+    //return (await response.json()).fileId;
+    return;
   }
 
   /**

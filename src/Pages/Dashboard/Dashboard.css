@@ -88,6 +88,13 @@ table th{
     text-transform: uppercase;
 }
 
+.sharp{
+    display: flex;
+    justify-content: end;
+    margin-right: 20%;
+}
+
+
 table td .action{
     border: 0;
     padding: 5px;
@@ -103,6 +110,18 @@ table td .action svg{
     vertical-align: middle;
 }
 
+.sharp{
+    display: flex;
+    justify-content: end;
+    margin-right: 20.4%;
+}
+
+.buttons-dash{
+    display: flex;
+    justify-content: end;
+    margin-right: 15%;
+}
+
 #trash{
     background-color: rgb(22, 113, 218);
 }
@@ -114,6 +133,7 @@ table td .action svg{
 
 #download{
     background-color: rgb(243, 200, 9);
+    margin-left: 5px;
 }
 
 #download:hover{
@@ -204,6 +224,19 @@ table td .action svg{
 
     table td:last-child{
         border-bottom: 0;
+    }
+
+    
+    
+    .buttons-dash{
+        display: flex;
+        width: 100%;
+        justify-content: end;
+    }
+
+    #download{
+        background-color: rgb(243, 200, 9);
+        margin-left: 0;
     }
 }
 

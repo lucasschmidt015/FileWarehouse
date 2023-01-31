@@ -100,7 +100,9 @@ export default function Dashboard(){
                                     <tr>
                                         <th scope='Col'>Name</th>
                                         <th scope='Col'>Updated</th>
-                                        <th scope='Col'>#</th>
+                                        <div className='sharp'>
+                                            <th scope='Col'>#</th>
+                                        </div>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -110,8 +112,10 @@ export default function Dashboard(){
                                                 <td data-Label="Name">{item.fileName}</td>
                                                 <td data-Label="Date">{format(item.uploadDate, 'dd/MM/yyyy')}</td>
                                                 <td>
-                                                    <span id="trash" onClick={() => deleteFile(item.serverId)} className='action'><FaTrash/></span>
-                                                    <span id='download' onClick={() => downloadFile(item.serverId)} className='action'><AiOutlineDownload/></span>
+                                                    <div className='buttons-dash'>
+                                                        <span id="trash" onClick={() => deleteFile(item.serverId)} className='action'><FaTrash/></span>
+                                                        <span id='download' onClick={() => downloadFile(item.serverId)} className='action'><AiOutlineDownload/></span>
+                                                    </div>                                                    
                                                 </td>
                                             </tr>
                                         );

@@ -1,11 +1,10 @@
 import { createContext, useState, useEffect } from "react";
 import firebase from "../services/FirebaseConnection";
 import { toast } from "react-toastify";
-import Storage from "../api/storage.ts";
+import { storage } from "../api/storage.ts";
 
 
 export const AuthContext = createContext();
-const _storage = Storage.init(); // Passar as credenciais que o jaqi mandar aqui
 
 function AuthProvider({children}){
     const [user, setUser] = useState(null);
@@ -13,7 +12,7 @@ function AuthProvider({children}){
     const [loading, setLoading] = useState(true);
 
     function getStorage(){
-        return _storage;
+        return storage;
     }
 
     function loadStorage(){

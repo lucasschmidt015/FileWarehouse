@@ -24,7 +24,8 @@ class StorageLifecycle {
   }
 
   private buildAuth(): string {
-    return 'Basic ' + Buffer.from(`${this.appKeyId}:${this.appKey}`).toString('base64');
+    const encoded = Buffer.from(this.appKeyId + ':' + this.appKey).toString('base64');
+    return `Basic ${encoded}`;
   }
 
   /**
@@ -33,15 +34,16 @@ class StorageLifecycle {
   async refresh(): Promise<boolean> {
     if (typeof this.appKeyId !== 'string' || typeof this.appKey !== 'string')
       return false;
-    console.log(`AUTH: ${this.buildAuth()}`);
     const response = await fetch(`https://api.backblazeb2.com/${APIEXT}/b2_authorize_account`, {
-      mode: 'no-cors',
       method: 'GET',
-      headers: new Headers({
+      headers: {
         'Authorization': this.buildAuth(),
-      }),
+      },
     });
-    console.log(`RESPONSE: ${response}`);
+    console.log(`HEADERS:`);
+    response.headers.forEach((val, key) => {
+      console.log(`${key} => ${val}`);
+    });
     console.log(`${response.status} ${response.statusText}`);
     if (response.status !== 200)
       return false;
@@ -88,7 +90,7 @@ export type BackblazeFile = {
 /**
  * Storage API with a Backblaze B2 backend
  */
-export default class Storage {
+export class Storage {
   private lifecycle: StorageLifecycle;
 
   private constructor(lifecycleData: StorageLifecycle) {
@@ -151,3 +153,6 @@ export default class Storage {
     });
   }
 }
+
+const storage = Storage.init();
+export { storage };

@@ -48,12 +48,12 @@ function AuthProvider({children}){
             setUser(data);
             storageUser(data);
             setLoadingAuth(false);
-            toast.success("Bem vindo de volta!");
+            toast.success("Welcome back!");
 
         })
         .catch((error) => {
             console.log("Erro:" + error)
-            toast.error("Ops, algo deu errado!");
+            toast.error("Oops, something went wrong!");
             setLoadingAuth(false);
         })
     }
@@ -81,21 +81,19 @@ function AuthProvider({children}){
                     storageUser(data);
                     setLoadingAuth(false);
                     //Navegar('/deshboard');
-                    toast.success("Bem vindo a plataforma!");
+                    toast.success("Welcome to the platform!");
                 })
             })
             .catch((error) => {
                 console.log(error);
-                toast.warn("Algo deu errado");
+                toast.warn("Oops, something went wrong!");
                 setLoadingAuth(false);
             })
         }else{
-            toast.warn("Ops, Algo deu errado");
+            toast.warn("Oops, something went wrong!");
             return;
-        }
-        
+        }        
     }
-
 
     async function SignOut(){
         

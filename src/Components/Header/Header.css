@@ -7,7 +7,13 @@
     height: auto;
     position: relative;
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-container h1{
+    margin-left: 30px;
+    font-size: 30px;
 }
 
 .header-container button{
@@ -36,6 +42,12 @@
 }
 
 @media screen and (max-width: 600px) {
+
+    .header-container h1{
+        margin-left: 15px;
+        font-size: 25px;
+    }
+
     .header-container button{
         font-size: 30px;
     

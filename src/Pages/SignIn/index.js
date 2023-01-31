@@ -21,13 +21,13 @@ export default function SignIn(){
         <dib className="container-login">
             <div className='input-area'>
                 <form onSubmit={handleSubmit}>
-                    <h1>Entrar</h1>
+                    <h1>Login</h1>
                     <input type="text" onChange={(e) => setEmail(e.target.value)} value={email} placeholder='email@email.com'/>
                     <input type="password" onChange={(e) => setSenha(e.target.value)} value={senha} placeholder='****'/>
-                    <button type='submit'>Acessar</button>
+                    <button type='submit'>Login</button>
                 </form>
 
-                <Link to="/signup" >Criar uma conta</Link>
+                <Link to="/signup" >Create an account</Link>
             </div>
         </dib>
     );
